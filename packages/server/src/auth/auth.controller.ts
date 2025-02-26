@@ -126,7 +126,7 @@ export class AuthController {
   }
 
 	private redirectWithTokens(res: any, tokens: any): void {
-		const redirectURL = new URL('/auth/callback', FRONTEND_URL);
+		const redirectURL = new URL('api/auth/callback', FRONTEND_URL);
 
 		redirectURL.searchParams.append('access_token', tokens.access_token);
 		redirectURL.searchParams.append('refresh_token', tokens.refresh_token);
