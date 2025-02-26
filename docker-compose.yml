@@ -1,15 +1,28 @@
+version: "3.8"
+
 services:
   server:
     build:
       context: .
       dockerfile: dockerfile-server
     image: seunggwan/corinee-server
+    container_name: corinee_server_1
     restart: always
-    container_name: corinee_server_1  # 컨테이너 이름 명시
     env_file:
       - .env
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
     ports:
       - "3000:3000"
+    depends_on:
+      - mysql
+      - redis
     networks:
       - app-network
 
@@ -20,19 +33,53 @@ services:
       args:
         - VITE_API_BASE_URL=${VITE_API_BASE_URL}
     image: seunggwan/corinee-client
-    container_name: corinee_client_1  # 컨테이너 이름 명시
+    container_name: corinee_client_1
+    restart: always
     env_file:
       - .env
     ports:
       - "80:80"
     depends_on:
       - server
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.0
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
     volumes:
-      - /etc/letsencrypt:/etc/letsencrypt  # 간단하게 수정
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"  
+    networks:
+      - app-network
+
+  redis:
+    image: redis:6
+    restart: always
+    env_file:
+      - .env
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"   
     networks:
       - app-network
 
 networks:
   app-network:
-    name: corinee_app-network  # 네트워크 이름 명시
+    name: corinee_app-network
     driver: bridge
+
+volumes:
+  mysql_data:
+  redis_data:
