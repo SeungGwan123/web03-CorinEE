@@ -1,6 +1,6 @@
 import { DataSource, Repository } from 'typeorm';
 import { User } from './user.entity';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { UserNotFoundException } from './exceptions/user.exceptions';
 
 @Injectable()
@@ -39,6 +39,14 @@ export class UserRepository extends Repository<User> {
       throw new UserNotFoundException(userId);
     }
 
+    return user;
+  }
+
+  async findUserByUsername(username: string): Promise<User> {
+    const user = await this.findOne({ where: {username}});
+    if (!user) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
     return user;
   }
 }

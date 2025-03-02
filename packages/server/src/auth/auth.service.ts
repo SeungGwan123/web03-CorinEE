@@ -35,7 +35,7 @@ export class AuthService {
   async signIn(
     username: string,
   ): Promise<{ access_token: string; refresh_token: string }> {
-    const user = await this.findUserByUsername(username);
+    const user = await this.userRepository.findUserByUsername(username);
     return this.generateTokens(user.id, user.username);
   }
 
@@ -46,7 +46,7 @@ export class AuthService {
     const guestName = `guest_${uuidv4()}`;
     await this.registerGuestUser(guestName);
 
-    const guestUser = await this.findUserByUsername(guestName);
+    const guestUser = await this.userRepository.findUserByUsername(guestName);
     await this.cacheGuestUser(guestUser.id);
 
     return this.generateTokens(guestUser.id, guestUser.username);
@@ -148,13 +148,6 @@ export class AuthService {
     };
   }
 
-  private async findUserByUsername(username: string): Promise<User> {
-    const user = await this.userRepository.findOneBy({ username });
-    if (!user) {
-      throw new UnauthorizedException('Invalid credentials');
-    }
-    return user;
-  }
 
   private async findUserById(userId: number): Promise<User> {
     const user = await this.userRepository.findOneBy({ id: userId });

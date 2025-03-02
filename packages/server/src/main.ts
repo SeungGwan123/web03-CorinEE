@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { config } from 'dotenv';
-import { setupSshTunnel } from './configs/ssh-tunnel';
 import { AllExceptionsFilter } from 'common/all-exceptions.filter';
 import { WinstonModule } from 'nest-winston';
 import { winstonConfig } from './configs/winston.config';
@@ -10,7 +9,6 @@ import { winstonConfig } from './configs/winston.config';
 config();
 
 async function bootstrap() {
-  await setupSshTunnel();
   const app = await NestFactory.create(AppModule, {
     logger: WinstonModule.createLogger(winstonConfig),
   });

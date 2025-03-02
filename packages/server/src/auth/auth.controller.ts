@@ -30,19 +30,22 @@ export class AuthController {
 	private readonly logger = new Logger(AuthController.name);
 	constructor(private authService: AuthService) { }
 
+  //일반 로그인
   @ApiBody({ type: SignInDto })
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  signIn(@Body() signInDto: Record<string, any>) {
+  signIn(@Body() signInDto: Record<string, any>) :Promise<{ access_token: string; refresh_token: string }> {
     return this.authService.signIn(signInDto.username);
   }
 
+  //임시 회원 로그인
   @HttpCode(HttpStatus.OK)
   @Post('guest-login')
-  guestSignIn() {
+  guestSignIn(): Promise<{ access_token: string; refresh_token: string }> {
     return this.authService.guestSignIn();
   }
 
+  //구글 로그인
 	@Get('google')
 	@UseGuards(PassportAuthGuard('google'))
 	async googleLogin() { }
@@ -54,6 +57,7 @@ export class AuthController {
     this.redirectWithTokens(res, tokens);
   }
 
+  //카카오 로그인
 	@Get('kakao')
 	@UseGuards(PassportAuthGuard('kakao'))
 	async kakaoLogin() { }
@@ -65,6 +69,7 @@ export class AuthController {
     this.redirectWithTokens(res, tokens);
   }
 
+  //회원 가입
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'New user successfully registered',
@@ -79,6 +84,7 @@ export class AuthController {
     return this.authService.signUp(signUpDto);
   }
 
+  //로그아웃
   @ApiBearerAuth('access-token')
   @ApiSecurity('access-token')
   @UseGuards(AuthGuard)
@@ -87,6 +93,7 @@ export class AuthController {
     return this.authService.logout(req.user.userId);
   }
 
+  //프로필 조회
   @UseGuards(AuthGuard)
   @ApiBearerAuth('access-token')
   @ApiSecurity('access-token')
@@ -95,6 +102,7 @@ export class AuthController {
     return req.user;
   }
 
+  //refresh token
   @ApiBody({
     schema: {
       type: 'object',
@@ -113,6 +121,7 @@ export class AuthController {
     return this.authService.refreshTokens(body.refreshToken);
   }
 
+  //oauth 핸들러
   private async handleOAuthLogin(user: any): Promise<any> {
     const signUpDto: SignUpDto = {
       name: user.name,
@@ -125,8 +134,9 @@ export class AuthController {
     return this.authService.validateOAuthLogin(signUpDto);
   }
 
+  //리다이렉트
 	private redirectWithTokens(res: any, tokens: any): void {
-		const redirectURL = new URL('api/auth/callback', FRONTEND_URL);
+		const redirectURL = new URL('/auth/callback', FRONTEND_URL);
 
 		redirectURL.searchParams.append('access_token', tokens.access_token);
 		redirectURL.searchParams.append('refresh_token', tokens.refresh_token);

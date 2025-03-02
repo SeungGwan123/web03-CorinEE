@@ -10116,6 +10116,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tunnel-ssh@npm:^5.2.0":
+  version: 5.2.0
+  resolution: "tunnel-ssh@npm:5.2.0"
+  dependencies:
+    ssh2: "npm:^1.15.0"
+  checksum: 10c0/d0a9fcbb8f3e2823c3dcf0a4338c6697f561fd1b82a431230483f5b6ddd2e395093973a80940b6ff8089565df3caf845efee365637f8ca98d515efeb5c861197
+  languageName: node
+  linkType: hard
+
 "tunnel@npm:^0.0.6":
   version: 0.0.6
   resolution: "tunnel@npm:0.0.6"
@@ -10585,6 +10594,7 @@ __metadata:
     eslint: "npm:^8.0.0"
     eslint-config-prettier: "npm:^9.1.0"
     prettier: "npm:^3.3.3"
+    tunnel-ssh: "npm:^5.2.0"
     typescript: "npm:5.4.3"
     ws: "npm:^8.18.0"
   languageName: unknown
